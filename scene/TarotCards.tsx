@@ -13,20 +13,23 @@ interface CardDef {
   rotationY: number
 }
 
-const SLOTS: Array<{ position: [number, number, number]; rotationY: number }> = [
-  { position: [-3.1, 0, -0.06], rotationY: -0.06 },
-  { position: [0.0, 0, 0.15], rotationY: 0.0 },
-  { position: [3.1, 0, -0.06], rotationY: 0.06 },
+type SlotDef = { position: [number, number, number] }
+
+// 4 cartes en ligne (paysage / desktop)
+const LANDSCAPE_SLOTS: SlotDef[] = [
+  { position: [-3.2, 0, 0] },
+  { position: [-1.07, 0, 0] },
+  { position: [1.07, 0, 0] },
+  { position: [3.2, 0, 0] },
 ]
 
-function shuffle(arr: number[]): number[] {
-  const a = [...arr]
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[a[i], a[j]] = [a[j], a[i]]
-  }
-  return a
-}
+// 2×2 grid (portrait mobile / tablette)
+const PORTRAIT_SLOTS: SlotDef[] = [
+  { position: [-1.1, 1.8, 0] },
+  { position: [1.1, 1.8, 0] },
+  { position: [-1.1, -1.8, 0] },
+  { position: [1.1, -1.8, 0] },
+]
 
 // ─── Drawing helpers ──────────────────────────────────────────────────────────
 
@@ -673,6 +676,111 @@ function drawCardIllustration(ctx: CanvasRenderingContext2D, W: number, H: numbe
     drawMushroom(ctx, cx + 105, cy + 148, 22, '#4a8060')
     drawMushroom(ctx, cx + 88, cy + 142, 16, '#5a9070')
     ctx.restore()
+
+  } else if (card.id === 'experiences') {
+    // ── Compass rose + constellation ──
+    // Outer rings
+    ctx.save(); ctx.shadowColor = card.accentColor; ctx.shadowBlur = 20
+    ctx.strokeStyle = `${card.accentColor}50`; ctx.lineWidth = 1.5
+    ctx.beginPath(); ctx.arc(cx, cy, 132, 0, Math.PI * 2); ctx.stroke()
+    ctx.restore()
+    ctx.strokeStyle = `${card.accentColor}25`; ctx.lineWidth = 1
+    ctx.beginPath(); ctx.arc(cx, cy, 118, 0, Math.PI * 2); ctx.stroke()
+
+    // Dot ring
+    for (let a = 0; a < Math.PI * 2; a += Math.PI / 12) {
+      const dx = cx + Math.cos(a) * 126, dy = cy + Math.sin(a) * 126
+      ctx.fillStyle = card.accentColor; ctx.globalAlpha = 0.15 + Math.sin(a * 4) * 0.08
+      ctx.beginPath(); ctx.arc(dx, dy, 2, 0, Math.PI * 2); ctx.fill()
+    }
+    ctx.globalAlpha = 1
+
+    // Inner circle background
+    ctx.fillStyle = 'rgba(10, 14, 26, 0.85)'
+    ctx.beginPath(); ctx.arc(cx, cy, 78, 0, Math.PI * 2); ctx.fill()
+    ctx.strokeStyle = `${card.accentColor}70`; ctx.lineWidth = 1.5
+    ctx.beginPath(); ctx.arc(cx, cy, 78, 0, Math.PI * 2); ctx.stroke()
+
+    // Intercardinal lines
+    ;[-Math.PI * 3 / 4, -Math.PI / 4, Math.PI / 4, Math.PI * 3 / 4].forEach(angle => {
+      ctx.strokeStyle = `${card.accentColor}55`; ctx.lineWidth = 1; ctx.globalAlpha = 0.55
+      ctx.beginPath()
+      ctx.moveTo(cx, cy)
+      ctx.lineTo(cx + Math.cos(angle) * 50, cy + Math.sin(angle) * 50)
+      ctx.stroke(); ctx.globalAlpha = 1
+    })
+
+    // Cardinal arms (N, S, E, W)
+    ;[[-Math.PI / 2, 72], [Math.PI / 2, 72], [0, 66], [Math.PI, 66]].forEach(([angle, len]) => {
+      ctx.save()
+      ctx.shadowColor = card.accentColor; ctx.shadowBlur = 10
+      ctx.strokeStyle = card.accentColor; ctx.lineWidth = 2; ctx.globalAlpha = 0.88
+      ctx.beginPath()
+      ctx.moveTo(cx, cy)
+      ctx.lineTo(cx + Math.cos(angle) * len, cy + Math.sin(angle) * len)
+      ctx.stroke(); ctx.restore()
+    })
+
+    // Diamond points at N, S, E, W
+    const drawDiamond = (dx: number, dy: number, size: number) => {
+      ctx.save()
+      ctx.shadowColor = card.accentColor; ctx.shadowBlur = 16
+      ctx.fillStyle = card.accentColor; ctx.globalAlpha = 0.95
+      ctx.beginPath()
+      ctx.moveTo(dx, dy - size)
+      ctx.lineTo(dx + size * 0.38, dy)
+      ctx.lineTo(dx, dy + size * 0.6)
+      ctx.lineTo(dx - size * 0.38, dy)
+      ctx.closePath(); ctx.fill(); ctx.restore()
+    }
+    drawDiamond(cx, cy - 72, 14)
+    drawDiamond(cx, cy + 72, 14)
+    drawDiamond(cx + 66, cy, 12)
+    drawDiamond(cx - 66, cy, 12)
+
+    // Center glow dot
+    ctx.save()
+    ctx.shadowColor = '#ffffff'; ctx.shadowBlur = 22
+    ctx.fillStyle = '#ffffff'; ctx.globalAlpha = 0.9
+    ctx.beginPath(); ctx.arc(cx, cy, 5, 0, Math.PI * 2); ctx.fill()
+    ctx.restore()
+
+    // Constellation stars
+    const cStars = [
+      { x: cx + 72, y: cy - 92 }, { x: cx - 68, y: cy - 96 },
+      { x: cx + 110, y: cy + 16 }, { x: cx - 106, y: cy + 28 },
+      { x: cx + 58, y: cy + 110 }, { x: cx - 52, y: cy + 114 },
+    ]
+    ctx.strokeStyle = `${card.accentColor}28`; ctx.lineWidth = 0.7
+    ctx.beginPath(); cStars.slice(0, 3).forEach((s, i) => i === 0 ? ctx.moveTo(s.x, s.y) : ctx.lineTo(s.x, s.y)); ctx.stroke()
+    ctx.beginPath(); cStars.slice(3).forEach((s, i) => i === 0 ? ctx.moveTo(s.x, s.y) : ctx.lineTo(s.x, s.y)); ctx.stroke()
+    cStars.forEach(s => {
+      ctx.save(); ctx.shadowColor = '#c8d8f0'; ctx.shadowBlur = 8
+      ctx.fillStyle = '#c8d8f0'; ctx.globalAlpha = 0.72
+      ctx.beginPath(); ctx.arc(s.x, s.y, 2.5, 0, Math.PI * 2); ctx.fill()
+      ctx.restore()
+    })
+
+    // Accent stars
+    ;[{ x: cx + 50, y: cy - 118 }, { x: cx - 46, y: cy - 112 }, { x: cx + 90, y: cy - 58 },
+      { x: cx - 86, y: cy - 48 }, { x: cx + 94, y: cy + 58 }, { x: cx - 90, y: cy + 72 }
+    ].forEach((s, i) => {
+      ctx.fillStyle = card.accentColor; ctx.globalAlpha = 0.65 + (i % 3) * 0.1
+      ctx.font = `${8 + (i % 3) * 3}px serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
+      ctx.fillText(i % 2 ? '✧' : '✦', s.x, s.y); ctx.globalAlpha = 1
+    })
+
+    // Crystal clusters flanking
+    ctx.save(); ctx.globalAlpha = 0.72
+    drawCrystalCluster(ctx, cx - 128, cy - 44, card.accentColor, 0.68)
+    drawCrystalCluster(ctx, cx + 128, cy - 44, card.accentColor, 0.68)
+    ctx.restore()
+
+    // Herb sprigs
+    ctx.save(); ctx.globalAlpha = 0.55
+    drawSprig(ctx, cx + 142, cy + 20, Math.PI - 0.28, card.accentColor, 1.05)
+    drawSprig(ctx, cx - 142, cy + 20, 0.28, card.accentColor, 1.05)
+    ctx.restore()
   }
 }
 
@@ -688,6 +796,8 @@ function createFrontTexture(card: CardDef): THREE.CanvasTexture {
     bg.addColorStop(0, '#1c1230'); bg.addColorStop(0.55, '#100d1e'); bg.addColorStop(1, '#0a0810')
   } else if (card.id === 'formations') {
     bg.addColorStop(0, '#1e1510'); bg.addColorStop(0.55, '#120f08'); bg.addColorStop(1, '#0a0808')
+  } else if (card.id === 'experiences') {
+    bg.addColorStop(0, '#0e1420'); bg.addColorStop(0.55, '#0a0f18'); bg.addColorStop(1, '#080810')
   } else {
     bg.addColorStop(0, '#101e14'); bg.addColorStop(0.55, '#0a1410'); bg.addColorStop(1, '#080a08')
   }
@@ -726,8 +836,8 @@ function createFrontTexture(card: CardDef): THREE.CanvasTexture {
   ctx.restore()
 
   // Roman numeral
-  const romanNumerals = ['I', 'II', 'III']
-  const romanIndex = ['about', 'formations', 'contact'].indexOf(card.id)
+  const romanNumerals = ['I', 'II', 'III', 'IV']
+  const romanIndex = ['about', 'formations', 'experiences', 'contact'].indexOf(card.id)
   ctx.fillStyle = card.accentColor; ctx.globalAlpha = 1.0
   ctx.font = '700 17px monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
   ctx.fillText(romanNumerals[romanIndex] ?? 'I', W / 2, 56); ctx.globalAlpha = 1
@@ -773,7 +883,7 @@ function createFrontTexture(card: CardDef): THREE.CanvasTexture {
   ctx.restore()
 
   // Subtitle
-  const subtitles: Record<string, string> = { about: '☽  the self  ☽', formations: '✦  the path  ✦', contact: '✉  the thread  ✉' }
+  const subtitles: Record<string, string> = { about: '☽  the self  ☽', formations: '✦  the path  ✦', contact: '✉  the thread  ✉', experiences: '✵  the journey  ✵' }
   ctx.save()
   ctx.fillStyle = card.accentColor
   ctx.globalAlpha = 0.9
@@ -832,6 +942,7 @@ function TarotCard({ def, isActive, isAnyActive, onSelect, dealDelay }: TarotCar
   const dimProgress = useRef(0)
   const dealProgress = useRef(0)
   const dealClock = useRef(0)
+  const settledBaseY = useRef(-4)
 
   const backTexture = useMemo(() => createBackTexture(), [])
   const frontTexture = useMemo(() => createFrontTexture(def), [def])
@@ -874,9 +985,18 @@ function TarotCard({ def, isActive, isAnyActive, onSelect, dealDelay }: TarotCar
     dimProgress.current = THREE.MathUtils.lerp(dimProgress.current, (isAnyActive && !isActive) ? 1 : 0, 1 - Math.pow(0.02, delta))
 
     if (groupRef.current) {
-      groupRef.current.position.x = THREE.MathUtils.lerp(0, def.position[0], ease)
-      groupRef.current.position.y = THREE.MathUtils.lerp(-4, def.position[1], ease) + hoverLift.current * 0.2 + activeLift.current * 0.4
-      groupRef.current.position.z = THREE.MathUtils.lerp(0, def.position[2], ease)
+      if (dealProgress.current < 1) {
+        groupRef.current.position.x = THREE.MathUtils.lerp(0, def.position[0], ease)
+        groupRef.current.position.z = THREE.MathUtils.lerp(0, def.position[2], ease)
+        settledBaseY.current = THREE.MathUtils.lerp(-4, def.position[1], ease)
+      } else {
+        const snap = 1 - Math.pow(0.005, delta)
+        groupRef.current.position.x = THREE.MathUtils.lerp(groupRef.current.position.x, def.position[0], snap)
+        groupRef.current.position.z = THREE.MathUtils.lerp(groupRef.current.position.z, def.position[2], snap)
+        settledBaseY.current = THREE.MathUtils.lerp(settledBaseY.current, def.position[1], snap)
+      }
+      groupRef.current.position.y = settledBaseY.current + hoverLift.current * 0.2 + activeLift.current * 0.4
+      groupRef.current.rotation.y = def.rotationY
     }
 
     if (glowLightRef.current) glowLightRef.current.intensity = 0.3 + glowIntensity.current * 2.5
@@ -914,6 +1034,15 @@ function TarotCard({ def, isActive, isAnyActive, onSelect, dealDelay }: TarotCar
   )
 }
 
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr]
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]]
+  }
+  return a
+}
+
 // ─── TarotCards (scene root) ──────────────────────────────────────────────────
 
 export interface TarotCardsProps {
@@ -925,21 +1054,26 @@ export function TarotCards({ activeSection, onCardSelect }: TarotCardsProps) {
   const { t } = useLanguage()
   const { size } = useThree()
   const sceneGroupRef = useRef<Group>(null)
+  const [isPortrait, setIsPortrait] = useState(false)
+  const prevPortrait = useRef(false)
 
-  const slotOrder = useMemo(() => shuffle([0, 1, 2]), [])
+  const slotOrder = useMemo(() => shuffle([0, 1, 2, 3]), [])
+
+  const dynamicSlots = isPortrait ? PORTRAIT_SLOTS : LANDSCAPE_SLOTS
 
   const cards: CardDef[] = useMemo(() => {
     const defs = [
       { id: 'about', symbol: '☽', label: t.about.title, accentColor: '#6b4d7a' },
       { id: 'formations', symbol: '✦', label: t.formations.title, accentColor: '#d4a574' },
+      { id: 'experiences', symbol: '✵', label: t.experiences.title, accentColor: '#8099b8' },
       { id: 'contact', symbol: '✉', label: t.contact.title, accentColor: '#7a9578' },
     ]
     return defs.map((def, i) => ({
       ...def,
-      position: SLOTS[slotOrder[i]].position,
-      rotationY: SLOTS[slotOrder[i]].rotationY,
+      position: dynamicSlots[slotOrder[i]].position,
+      rotationY: 0,
     }))
-  }, [t, slotOrder])
+  }, [t, slotOrder, dynamicSlots])
 
   const handleSelect = useCallback((id: string) => {
     onCardSelect(activeSection === id ? null : id)
@@ -947,11 +1081,19 @@ export function TarotCards({ activeSection, onCardSelect }: TarotCardsProps) {
 
   useFrame(() => {
     if (!sceneGroupRef.current) return
-    const s = size.width < 380 ? 0.42
-            : size.width < 480 ? 0.52
-            : size.width < 680 ? 0.68
-            : size.width < 900 ? 0.82
-            : 1
+
+    // Détection orientation
+    const portrait = size.height > size.width
+    if (portrait !== prevPortrait.current) {
+      prevPortrait.current = portrait
+      setIsPortrait(portrait)
+    }
+
+    // Scale responsive selon orientation
+    const s = portrait
+      ? (size.width < 480 ? 0.82 : size.width < 768 ? 0.92 : 1.0)
+      : (size.width < 380 ? 0.50 : size.width < 480 ? 0.62
+          : size.width < 680 ? 0.80 : size.width < 900 ? 0.95 : 1.05)
     sceneGroupRef.current.scale.setScalar(s)
   })
 

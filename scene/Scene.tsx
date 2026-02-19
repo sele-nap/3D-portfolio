@@ -9,10 +9,10 @@ function ResponsiveCamera() {
   useFrame(() => {
     if (size.width === lastWidth.current) return
     lastWidth.current = size.width
-    const z = size.width < 380 ? 11
-            : size.width < 480 ? 9.5
-            : size.width < 768 ? 8.5
-            : 7.5
+    const z = size.width < 380 ? 10
+            : size.width < 480 ? 8
+            : size.width < 768 ? 7
+            : 5
     camera.position.z = z
   })
 
@@ -72,7 +72,7 @@ export function Scene({ activeSection, onCardSelect }: SceneProps) {
     >
       <Canvas
         dpr={[1, 2]}
-        camera={{ position: [0, 0, 5.5], fov: 58 }}
+        camera={{ position: [0, 0, 5], fov: 72 }}
       >
         <ResponsiveCamera />
 
