@@ -63,7 +63,7 @@ export const translations = {
           location: 'Clermont-Ferrand, France',
           highlights: [
             'Formation aux outils numériques (HTML/CSS, Adobe Suite), à la communication et à la gestion de projets culturels',
-            'Spécialisation dans la production de médias numériques, la médiation culturelleet le contenu éditorial',
+            'Spécialisation dans la production de médias numériques, la médiation culturelle et le contenu éditorial',
             'Cours d\'anglais avancé et communication numérique',
           ]
         }
@@ -72,6 +72,45 @@ export const translations = {
         label: 'Télécharger mon CV',
         fileName: '/CV_Poun_Selena_fr.pdf'
       }
+    },
+
+    experiences: {
+      title: 'Expériences',
+      description: 'Un parcours à la croisée du web, de la 3D et de l\'innovation.',
+      jobs: [
+        {
+          title: 'Développeuse Full-Stack 3D',
+          period: 'Mars 2022 – Juillet 2025',
+          company: 'Decq',
+          location: 'Saint-Priest, France',
+          highlights: [
+            'Développement d\'un configurateur 3D en ligne en Vue.js, Three.js, TypeScript et PHP',
+            'Conception de composants interactifs et rendu 3D temps réel',
+            'Optimisation de l\'UX et refonte modulaire du code en lien avec l\'équipe design',
+            'Mise en production de l\'outil, utilisé par plusieurs clients industriels',
+            'Réalisation majeure : livrable final mis en production, conçu de A à Z avec une architecture front/back maintenable.'
+          ]
+        },
+        {
+          title: 'Business Developer',
+          period: 'Octobre – Novembre 2019',
+          company: 'DataLumni',
+          location: 'Annecy, France',
+          highlights: [
+            'Prospection téléphonique et création de supports marketing',
+            'Contribution à la stratégie de communication',
+          ]
+        },
+        {
+          title: 'Conceptrice en Réalité Virtuelle',
+          period: 'Février – Mars 2019',
+          company: 'Université Savoie Mont Blanc',
+          location: 'Chambéry, France',
+          highlights: [
+            'Réalisation d\'un prototype VR sous Unity (C#) pour un projet de thèse',
+          ]
+        }
+      ]
     },
 
     contact: {
@@ -161,6 +200,45 @@ export const translations = {
         label: 'Download my CV',
         fileName: '/CV_Poun_Selena_en.pdf'
       }
+    },
+
+    experiences: {
+      title: 'Experiences',
+      description: 'A path at the crossroads of web, 3D and innovation.',
+      jobs: [
+        {
+          title: 'Full-Stack 3D Developer',
+          period: 'March 2022 – July 2025',
+          company: 'Decq',
+          location: 'Saint-Priest, France',
+          highlights: [
+            'Developed a production-ready online 3D configurator using Vue.js, Three.js, TypeScript and PHP',
+            'Created interactive components and integrated real-time 3D rendering',
+            'Improved UX and code scalability in close collaboration with the design team',
+            'Delivered a stable, modular platform used by industrial clients',
+            'Key achievement: final deliverable put into production, designed from start to finish with a maintainable front/back architecture',
+          ]
+        },
+        {
+          title: 'Business Developer',
+          period: 'October – November 2019',
+          company: 'DataLumni',
+          location: 'Annecy, France',
+          highlights: [
+            'Led prospecting efforts and supported marketing visuals',
+            'Contributed to outreach strategy and competitive analysis',
+          ]
+        },
+        {
+          title: 'Virtual Reality Designer',
+          period: 'February – March 2019',
+          company: 'University of Savoy Mont Blanc',
+          location: 'Chambéry, France',
+          highlights: [
+            'Built a VR prototype in Unity (C#) for a PhD research project',
+          ]
+        }
+      ]
     },
 
     contact: {

@@ -82,6 +82,30 @@ export function Panel({ activeSection, onClose }: PanelProps) {
             </div>
           )}
 
+          {activeSection === 'experiences' && (
+            <div className="modal-content">
+              <h2 className="modal-title">{t.experiences.title}</h2>
+              <div className="modal-accent-line" />
+              <p className="modal-text">{t.experiences.description}</p>
+              <div className="degrees-list">
+                {t.experiences.jobs.map((job, i) => (
+                  <div key={i} className="degree-item">
+                    <div className="degree-header">
+                      <span className="degree-period">{job.period}</span>
+                      <span className="degree-school">{job.company} · <span className="degree-location">{job.location}</span></span>
+                    </div>
+                    <p className="degree-title">{job.title}</p>
+                    <ul className="degree-highlights">
+                      {job.highlights.map((h, j) => (
+                        <li key={j}>{h}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {activeSection === 'contact' && (
             <div className="modal-content">
               <h2 className="modal-title">{t.contact.title}</h2>
