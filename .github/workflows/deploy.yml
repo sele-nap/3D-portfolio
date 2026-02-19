@@ -25,6 +25,9 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Check dist contents
+        run: ls -la dist/ && ls -la dist/assets/ || echo "No assets folder!"
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
